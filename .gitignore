@@ -1,0 +1,37 @@
+# Node dependencies
+node_modules/
+
+# Environment variables (VERY IMPORTANT for deployment)
+.env
+.env.*
+!.env.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+temp/
+*.swp
+
+# Build outputs (if you add later)
+dist/
+build/
+
+# Coverage
+coverage/
+
+# Optional (keep it usually for stable deploys)
+# package-lock.json

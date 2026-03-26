@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoScope — Live Crypto Prices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">Crypto<strong>Scope</strong></span>
+      </div>
+      <div class="header-meta">
+        <span class="live-badge"><span class="pulse"></span>LIVE</span>
+        <span class="api-credit">via blockchain.com API</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero + Search -->
+  <section class="hero">
+    <div class="hero-bg-text">CRYPTO</div>
+    <div class="hero-content">
+      <h1>Track Any<br/><em>Cryptocurrency</em><br/>Price Instantly</h1>
+      <p class="hero-sub">Real-time data powered by the Blockchain.com Exchange API</p>
+
+      <form class="search-form" action="/search" method="POST">
+        <div class="search-wrap">
+          <span class="search-prefix">$</span>
+          <input
+            type="text"
+            name="symbol"
+            placeholder="BTC, ETH, SOL, XRP..."
+            value="<%= searchSymbol ? searchSymbol.replace('-USD','') : '' %>"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="submit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+            Search
+          </button>
+        </div>
+        <p class="search-hint">Enter a symbol like <code>BTC</code>, <code>ETH-USD</code>, or <code>SOL-USD</code></p>
+      </form>
+    </div>
+  </section>
+
+  <main>
+
+    <!-- Search Error -->
+    <% if (searchError) { %>
+    <div class="alert alert-error">
+      <span class="alert-icon">⚠</span>
+      <span><%= searchError %></span>
+    </div>
+    <% } %>
+
+    <!-- Search Result -->
+    <% if (searchResult) { %>
+    <section class="result-section">
+      <div class="section-label">SEARCH RESULT</div>
+      <div class="result-card featured">
+        <div class="result-header">
+          <div class="coin-identity">
+            <div class="coin-badge"><%= searchResult.symbol.split('-')[0] %></div>
+            <div>
+              <div class="coin-symbol"><%= searchResult.symbol %></div>
+              <div class="coin-name">vs <%= searchResult.symbol.split('-')[1] || 'USD' %></div>
+            </div>
+          </div>
+          <div class="price-block">
+            <div class="price-main">$<%= searchResult.last ? Number(searchResult.last).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 6}) : 'N/A' %></div>
+            <% if (searchResult.change !== null) { %>
+              <div class="price-change <%= parseFloat(searchResult.change) >= 0 ? 'pos' : 'neg' %>">
+                <%= parseFloat(searchResult.change) >= 0 ? '▲' : '▼' %> <%= Math.abs(searchResult.change) %>%
+                <span class="change-label">24h</span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat">
+            <span class="stat-label">24h Open</span>
+            <span class="stat-value">$<%= searchResult.open24h ? Number(searchResult.open24h).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 6}) : 'N/A' %></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">24h High</span>
+            <span class="stat-value high">$<%= searchResult.high24h ? Number(searchResult.high24h).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A' %></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">24h Low</span>
+            <span class="stat-value low">$<%= searchResult.low24h ? Number(searchResult.low24h).toLocaleString('en-US', {minimumFractionDigits: 2}) : 'N/A' %></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Volume 24h</span>
+            <span class="stat-value"><%= formatNumber(searchResult.volume24h) %></span>
+          </div>
+        </div>
+        <div class="result-footer">
+          <span class="data-source">Data: blockchain.com/v3/exchange/tickers/<%= searchResult.symbol %></span>
+          <button class="refresh-btn" onclick="refreshTicker('<%= searchResult.symbol %>', this)">↻ Refresh</button>
+        </div>
+      </div>
+    </section>
+    <% } %>
+
+    <!-- Popular Coins -->
+    <section class="market-section">
+      <div class="section-header">
+        <div class="section-label">MARKET OVERVIEW</div>
+        <h2>Popular Pairs</h2>
+      </div>
+
+      <% if (popularData.length > 0) { %>
+      <div class="coins-grid">
+        <% popularData.forEach((coin, i) => { %>
+        <div class="coin-card" style="animation-delay: <%= i * 80 %>ms">
+          <div class="coin-card-top">
+            <div class="coin-ticker"><%= coin.symbol.split('-')[0] %></div>
+            <% if (coin.change !== null) { %>
+              <div class="badge-change <%= parseFloat(coin.change) >= 0 ? 'pos' : 'neg' %>">
+                <%= parseFloat(coin.change) >= 0 ? '+' : '' %><%= coin.change %>%
+              </div>
+            <% } %>
+          </div>
+          <div class="coin-price">
+            $<%= coin.last ? Number(coin.last).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—' %>
+          </div>
+          <div class="coin-pair"><%= coin.symbol %></div>
+          <div class="coin-stats-mini">
+            <div class="mini-stat">
+              <span>H</span>
+              <span class="high">$<%= coin.high24h ? Number(coin.high24h).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—' %></span>
+            </div>
+            <div class="mini-stat">
+              <span>L</span>
+              <span class="low">$<%= coin.low24h ? Number(coin.low24h).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—' %></span>
+            </div>
+            <div class="mini-stat">
+              <span>VOL</span>
+              <span><%= formatNumber(coin.volume24h) %></span>
+            </div>
+          </div>
+          <div class="coin-bar">
+            <% if (coin.high24h && coin.low24h && coin.last) {
+              const pct = Math.min(100, Math.max(0, ((coin.last - coin.low24h) / (coin.high24h - coin.low24h)) * 100));
+            %>
+            <div class="bar-track">
+              <div class="bar-fill <%= parseFloat(coin.change) >= 0 ? 'pos' : 'neg' %>" style="width: <%= pct %>%"></div>
+              <div class="bar-marker" style="left: <%= pct %>%"></div>
+            </div>
+            <div class="bar-labels"><span>24h Low</span><span>Price Range</span><span>24h High</span></div>
+            <% } %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+      <% } else { %>
+      <div class="alert alert-info">
+        <span class="alert-icon">ℹ</span>
+        <span>Market data temporarily unavailable. The Blockchain.com API may be rate-limiting requests.</span>
+      </div>
+      <% } %>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section">
+      <div class="section-label">UNDER THE HOOD</div>
+      <h2>How It Works</h2>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-num">01</div>
+          <div class="how-title">You Search</div>
+          <div class="how-desc">Enter any crypto symbol (e.g. <code>BTC</code>) in the search box and submit the form.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-num">02</div>
+          <div class="how-title">Express Routes It</div>
+          <div class="how-desc">Your POST request hits <code>/search</code> on the Node.js/Express server, which validates and formats the symbol.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-num">03</div>
+          <div class="how-title">Axios Fetches Data</div>
+          <div class="how-desc">The server uses <strong>Axios</strong> to call <code>api.blockchain.com/v3/exchange/tickers/{symbol}</code> and awaits the JSON response.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-num">04</div>
+          <div class="how-title">EJS Renders It</div>
+          <div class="how-desc">Price, 24h stats, and volume are extracted and rendered via an <strong>EJS</strong> template back to your browser.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">◈ CryptoScope</div>
+      <div class="footer-note">Built with Express.js · Axios · EJS · Blockchain.com API</div>
+      <div class="footer-disclaimer">Price data is for informational purposes only. Not financial advice.</div>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
