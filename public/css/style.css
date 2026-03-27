@@ -558,6 +558,8 @@ body::before {
 .td-chg { font-weight: 500; }
 .td-chg.pos { color: var(--green) !important; }
 .td-chg.neg { color: var(--red) !important; }
+.grn-cell { color: var(--green) !important; }
+.red-cell { color: var(--red) !important; }
 
 .mini-range { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end; }
 .mini-track {
