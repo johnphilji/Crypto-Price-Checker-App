@@ -66,8 +66,6 @@ app.get("/", async (req, res) => {
         symbol: d.symbol,
         last: d.last_trade_price,
         open24h: d.price_24h,
-        high24h: d.volume_24h_price_high,
-        low24h: d.volume_24h_price_low,
         volume24h: d.volume_24h,
         change: calcChange(d.last_trade_price, d.price_24h),
       });
@@ -101,8 +99,6 @@ app.post("/search", async (req, res) => {
       symbol: d.symbol,
       last: d.last_trade_price,
       open24h: d.price_24h,
-      high24h: d.volume_24h_price_high,
-      low24h: d.volume_24h_price_low,
       volume24h: d.volume_24h,
       change: calcChange(d.last_trade_price, d.price_24h),
     };
@@ -128,8 +124,6 @@ app.post("/search", async (req, res) => {
         symbol: d.symbol,
         last: d.last_trade_price,
         open24h: d.price_24h,
-        high24h: d.volume_24h_price_high,
-        low24h: d.volume_24h_price_low,
         volume24h: d.volume_24h,
         change: calcChange(d.last_trade_price, d.price_24h),
       });
@@ -157,8 +151,6 @@ app.get("/api/ticker/:symbol", async (req, res) => {
         symbol: d.symbol,
         last: d.last_trade_price,
         open24h: d.price_24h,
-        high24h: d.volume_24h_price_high,
-        low24h: d.volume_24h_price_low,
         volume24h: d.volume_24h,
         change: calcChange(d.last_trade_price, d.price_24h),
       },

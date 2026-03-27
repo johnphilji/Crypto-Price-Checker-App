@@ -190,45 +190,12 @@
             </div>
           </div>
           <div class="r-stat">
-            <div class="r-stat-lbl">24h High</div>
-            <div class="r-stat-val grn">
-              $<%= searchResult.high24h
-                ? Number(searchResult.high24h).toLocaleString('en-US', {minimumFractionDigits: 2})
-                : 'N/A' %>
-            </div>
-          </div>
-          <div class="r-stat">
-            <div class="r-stat-lbl">24h Low</div>
-            <div class="r-stat-val red">
-              $<%= searchResult.low24h
-                ? Number(searchResult.low24h).toLocaleString('en-US', {minimumFractionDigits: 2})
-                : 'N/A' %>
-            </div>
-          </div>
-          <div class="r-stat">
             <div class="r-stat-lbl">Volume 24h</div>
             <div class="r-stat-val"><%= formatNumber(searchResult.volume24h) %></div>
           </div>
         </div>
 
-        <!-- Price range bar -->
-        <% if (searchResult.high24h && searchResult.low24h && searchResult.last) {
-          const pct = Math.min(100, Math.max(0,
-            ((searchResult.last - searchResult.low24h) / (searchResult.high24h - searchResult.low24h)) * 100
-          ));
-        %>
-        <div class="range-section">
-          <div class="range-lbl">
-            <span>24h Low &nbsp;$<%= Number(searchResult.low24h).toLocaleString('en-US',{minimumFractionDigits:2}) %></span>
-            <span>Price Position in Daily Range</span>
-            <span>24h High &nbsp;$<%= Number(searchResult.high24h).toLocaleString('en-US',{minimumFractionDigits:2}) %></span>
-          </div>
-          <div class="range-track">
-            <div class="range-fill" id="rangeFill" style="width:0%" data-target="<%= pct %>%"></div>
-            <div class="range-pip" id="rangePip" style="left:0%" data-target="<%= pct %>%"></div>
-          </div>
-        </div>
-        <% } %>
+
 
         <div class="result-foot">
           <span class="result-src">
@@ -263,10 +230,7 @@
             <th>Asset</th>
             <th>Last Price</th>
             <th>24h Change</th>
-            <th>24h High</th>
-            <th>24h Low</th>
             <th>Volume</th>
-            <th>Range</th>
           </tr>
         </thead>
         <tbody>
@@ -300,30 +264,7 @@
                 <%= isPos ? '+' : '' %><%= coin.change %>%
               <% } else { %>—<% } %>
             </td>
-            <td>
-              $<%= coin.high24h
-                ? Number(coin.high24h).toLocaleString('en-US', {minimumFractionDigits: 2})
-                : '—' %>
-            </td>
-            <td>
-              $<%= coin.low24h
-                ? Number(coin.low24h).toLocaleString('en-US', {minimumFractionDigits: 2})
-                : '—' %>
-            </td>
             <td><%= formatNumber(coin.volume24h) %></td>
-            <td>
-              <div class="mini-range">
-                <div class="mini-track">
-                  <div class="mini-fill <%= isPos ? 'pos' : 'neg' %>"
-                       style="width:<%= pct %>%"></div>
-                  <div class="mini-pip" style="left:<%= pct %>%"></div>
-                </div>
-                <div class="mini-lbls">
-                  <span><%= pct.toFixed(0) %>%</span>
-                  <span style="opacity:.5">of range</span>
-                </div>
-              </div>
-            </td>
           </tr>
           <% }) %>
         </tbody>

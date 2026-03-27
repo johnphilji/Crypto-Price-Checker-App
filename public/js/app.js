@@ -64,17 +64,6 @@ if (symbolInput) {
 // 3. RANGE BAR ANIMATION ON LOAD
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Animate result range bar
-  const fill = document.getElementById('rangeFill');
-  const pip  = document.getElementById('rangePip');
-  if (fill && pip) {
-    const target = fill.dataset.target;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      fill.style.width = target;
-      pip.style.left   = target;
-    }));
-  }
-
   // Animate mini table bars
   document.querySelectorAll('.mini-fill').forEach(el => {
     const w = el.style.width;
